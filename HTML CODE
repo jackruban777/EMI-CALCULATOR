@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EMI Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex items-center justify-center">
+  <div class="bg-white shadow-xl rounded-2xl p-8 max-w-xl w-full">
+    <h2 class="text-3xl font-semibold text-center mb-6 text-indigo-600">EMI Calculator</h2>
+
+    <!-- Loan Amount -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Loan Amount (₹):</label>
+      <div class="flex items-center gap-2">
+        <input type="range" id="loanAmount" min="10000" max="5000000" step="10000" value="500000" class="w-full">
+        <input type="number" id="loanAmountInput" min="10000" max="5000000" step="10000" value="500000" class="w-32 px-2 py-1 border rounded">
+      </div>
+    </div>
+
+    <!-- Interest Rate -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Interest Rate (% p.a.):</label>
+      <div class="flex items-center gap-2">
+        <input type="range" id="interestRate" min="1" max="20" step="0.1" value="7.5" class="w-full">
+        <input type="number" id="interestRateInput" min="1" max="20" step="0.1" value="7.5" class="w-20 px-2 py-1 border rounded">
+      </div>
+    </div>
+
+    <!-- Tenure (in Years) -->
+    <div class="mb-6">
+      <label class="block text-sm font-medium mb-1">Tenure (Years):</label>
+      <div class="flex items-center gap-2">
+        <input type="range" id="tenure" min="1" max="30" step="1" value="5" class="w-full">
+        <input type="number" id="tenureInput" min="1" max="30" step="1" value="5" class="w-20 px-2 py-1 border rounded">
+      </div>
+    </div>
+
+    <button onclick="calculateEMI()" class="w-full bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition">Calculate EMI</button>
+
+    <div id="results" class="mt-6 hidden">
+      <h3 class="text-xl font-bold mb-4 text-indigo-600">Results</h3>
+      <div class="space-y-2">
+        <p><strong>Monthly EMI:</strong> ₹<span id="emiResult">0</span></p>
+        <p><strong>Total Interest:</strong> ₹<span id="totalInterest">0</span></p>
+        <p><strong>Total Amount Payable:</strong> ₹<span id="totalPayment">0</span></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const loanSlider = document.getElementById("loanAmount");
+    const loanInput = document.getElementById("loanAmountInput");
+    const rateSlider = document.getElementById("interestRate");
+    const rateInput = document.getElementById("interestRateInput");
+    const tenureSlider = document.getElementById("tenure");
+    const tenureInput = document.getElementById("tenureInput");
+
+    // Synchronize slider and number input
+    function syncSlider(slider, input) {
+      slider.addEventListener("input", () => input.value = slider.value);
+      input.addEventListener("input", () => slider.value = input.value);
+    }
+
+    syncSlider(loanSlider, loanInput);
+    syncSlider(rateSlider, rateInput);
+    syncSlider(tenureSlider, tenureInput);
+
+    function calculateEMI() {
+      const P = parseFloat(loanInput.value);
+      const annualRate = parseFloat(rateInput.value);
+      const years = parseInt(tenureInput.value);
+      const N = years * 12;
+      const R = annualRate / 12 / 100;
+
+      const emi = (P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
+      const totalPayment = emi * N;
+      const totalInterest = totalPayment - P;
+
+      document.getElementById("emiResult").textContent = emi.toFixed(2);
+      document.getElementById("totalInterest").textContent = totalInterest.toFixed(2);
+      document.getElementById("totalPayment").textContent = totalPayment.toFixed(2);
+      document.getElementById("results").classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
